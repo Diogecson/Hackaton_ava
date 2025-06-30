@@ -5,14 +5,15 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import google.generativeai as genai
+import time
 
 # Configurar Gemini
-genai.configure(api_key="AIzaSyDSdPnPh2dVOXd_94e0PQFD9jVC8JECz6I")  # Substitua pela sua chave da API
+genai.configure(api_key="SUA_CHAVE_DO_GEMINI")  # Substitua pela sua chave
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Iniciar navegador (mantendo a aba aberta e sem notificações)
+# Configurar Chrome em modo headless para Render
 chrome_options = Options()
-chrome_options.add_argument("--headless")  # modo invisível
+chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
@@ -21,6 +22,8 @@ chrome_options.add_argument("--window-size=1920,1080")
 navegador = webdriver.Chrome(options=chrome_options)
 navegador.get("https://fecaf.brightspace.com/d2l/login")
 
+# Aguarda tempo para login manual (caso queira testar com conta pública)
+time.sleep(15)
 
 # Esperar o conteúdo principal carregar
 try:
@@ -28,23 +31,15 @@ try:
         EC.presence_of_element_located((By.CLASS_NAME, "d2l-page-main"))
     )
 except:
-    print("⚠️ Timeout ao esperar conteúdo da Brightspace. Verifique o login.")
+    print("⚠️ Timeout ao esperar conteúdo da Brightspace.")
 
 # Conteúdo global
 conteudo_global = {"texto": "", "topicos": []}
 
 def atualizar_conteudo():
     try:
-        # Captura todos os elementos visíveis e ignora scripts, headers, etc.
         elementos = navegador.find_elements(By.XPATH, "//*[not(self::script or self::style or self::header or self::footer or self::nav or self::aside)]")
-        textos_visiveis = []
-
-        for el in elementos:
-            if el.is_displayed():
-                texto = el.text.strip()
-                if texto:
-                    textos_visiveis.append(texto)
-
+        textos_visiveis = [el.text.strip() for el in elementos if el.is_displayed() and el.text.strip()]
         texto_final = ' '.join(textos_visiveis)[:20000]
         conteudo_global["texto"] = texto_final
 
@@ -71,7 +66,7 @@ def chat(pergunta, historico):
     historico.append([pergunta, resposta])
     return historico, historico
 
-# Interface com Gradio
+# Interface Gradio
 with gr.Blocks(css="""
     .gradio-container { font-family: 'Arial', sans-serif; }
     #chatbot { height: 400px; }
@@ -95,8 +90,7 @@ with gr.Blocks(css="""
     btn_enviar.click(fn=chat, inputs=[entrada, chatbot], outputs=[chatbot, chatbot])
     btn_sair.click(fn=lambda: exit(), inputs=[], outputs=[])
 
-
-# Roda app
+# Executa o app na porta da Render
 if __name__ == "__main__":
     demo.launch(server_name="0.0.0.0", server_port=10000)
     navegador.quit()
