@@ -1,4 +1,0 @@
-gradio
-selenium
-google-generativeai
-chromedriver-autoinstaller
