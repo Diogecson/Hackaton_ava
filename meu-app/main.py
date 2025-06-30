@@ -12,10 +12,15 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Iniciar navegador (mantendo a aba aberta e sem notificações)
 chrome_options = Options()
-chrome_options.add_argument("--disable-notifications")
+chrome_options.add_argument("--headless")  # modo invisível
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--window-size=1920,1080")
+
 navegador = webdriver.Chrome(options=chrome_options)
 navegador.get("https://fecaf.brightspace.com/d2l/login")
-input("🔐 Faça o login e pressione ENTER para continuar...")
+
 
 # Esperar o conteúdo principal carregar
 try:
@@ -93,5 +98,5 @@ with gr.Blocks(css="""
 
 # Roda app
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(server_name="0.0.0.0", server_port=10000)
     navegador.quit()
