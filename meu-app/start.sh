@@ -1,3 +1,3 @@
 #!/bin/bash
 pip install -r requirements.txt
-python main.py  # ou o nome do seu arquivo principal
+gunicorn main:demo --bind 0.0.0.0:$PORT
