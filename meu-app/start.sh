@@ -1,3 +1,2 @@
 #!/bin/bash
-chmod +x start.sh
-python3 main.py
+python3 meu-app/main.py

@@ -1,0 +1,14 @@
+# Ignorar ambiente virtual
+.venv/
+venv/
+
+# Ignorar arquivos temporários do VSCode e Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Ignorar arquivos de sistema
+.DS_Store
+Thumbs.db
