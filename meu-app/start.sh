@@ -1,2 +1,3 @@
 #!/bin/bash
-python3 meu-app/main.py
+pip install -r requirements.txt
+python main.py  # ou o nome do seu arquivo principal
